@@ -1,24 +1,23 @@
 library(plyr)
 library(ggplot2)
 library(reshape2)
+library(dplyr)
 
-setwd("/Users/mattia.pitossi/Documents/dataset_s&p")
+setwd("/Users/mattia.pitossi/vsCodeProjects/sp500analysis/dataset_s&p")
 
 data <- read.csv("sp500_stocks.csv", header = TRUE, sep = ",")
 
+sub <- subset(data, Symbol %in% c("AAPL", "TSLA", "MSFT", "NFLX")
+& Date >= "2012-01-01" & Date <= "2022-12-31")
+
 
 mgdata <- ddply(
-    subset(data, Date >= "2012-01-01" & Date <= "2022-12-31"),
-    "Symbol",
+    sub,
+    ~Date + Symbol,
     summarise,
-    mean_close = mean(Close),
-    max_value = max(Close),
-    min_value = min(Close)
+    avgClose = mean(Close)
 )
 
-print(mgdata)
 
-
-ggplot(mgdata, aes(Symbol, max_value)) + geom_point() +
-geom_smooth() + xlab("Symbol") + ylab("Max value") +
-ggtitle("All stocks")
+print(ggplot(mgdata, aes(Date, avgClose, group = 1)) + geom_line() +
+       facet_wrap(~Symbol, nrow = 2))
