@@ -59,29 +59,39 @@ worst_ten_performers <- sp500 %>%
 
 
 
-cat("Top performer:", top_performer, "\n")
-cat("Ten top performers:", paste(top_ten_performers, collapse = ", "), "\n")
-cat("Worst performer:", worst_performer, "\n")
-cat("Ten worst performers:", paste(worst_ten_performers, collapse = ", "), "\n")
+# cat("Top performer:", top_performer, "\n")
+# cat("Ten top performers:", paste(top_ten_performers, collapse = ", "), "\n")
+# cat("Worst performer:", worst_performer, "\n")
+# cat("Ten worst performers:", paste(worst_ten_performers, collapse = ", "), "\n")
 
-# Create a list to store the plots
-plots <- list()
+# # Loop over the best performers and create separate plots for each stock
+# for (symbol in top_ten_performers) {
+#   # Create a plot for the current stock
+#   plot_data <- sp500 %>%
+#     filter(Symbol == symbol)
+#   plot_title <- paste0(symbol, " Performance over the last 10 years")
+#   plot_filename <- paste0(symbol, "_plot.png")
+#   plot <- ggplot(plot_data, aes(x = Date, y = Pct_Change)) +
+#     geom_line(color = "blue") +
+#     labs(title = plot_title, x = "Date", y = "Percentage Change") +
+#     ggtitle("Top Performer Plot")
 
-# Loop over the best performers and create separate plots for each stock
-for (symbol in top_ten_performers) {
-  # Create a plot for the current stock
-  plot_data <- sp500 %>%
-    filter(Symbol == symbol)
-  plot_title <- paste0(symbol, " Performance over the last 10 years")
-  plot_filename <- paste0(symbol, "_plot.png")
-  plot <- ggplot(plot_data, aes(x = Date, y = Pct_Change)) +
-    geom_line(color = "blue") +
-    labs(title = plot_title, x = "Date", y = "Percentage Change") +
-    ggtitle("Top Performer Plot")
+#   # Save the plot as a PNG file
+#   ggsave(plot_filename, plot)
 
-  # Save the plot as a PNG file
-  ggsave(plot_filename, plot)
+#   # Display the plot
+#   print(plot)
+# }
 
-  # Display the plot
-  print(plot)
-}
+
+mgdata <- sp500 %>%
+  filter(Symbol %in% top_ten_performers) %>%
+  group_by(Date, Symbol) %>%
+  summarise(avgClose = mean(Close))
+
+plot <- ggplot(mgdata, aes(Date, avgClose, group = 1)) +
+  geom_line() +
+  facet_wrap(~Symbol, nrow = 2)
+
+ggsave("top_10_performing_stocks.png", plot, width = 12, height = 6)
+print(plot)
