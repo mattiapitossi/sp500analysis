@@ -11,18 +11,24 @@ sp500$Date <- as.Date(sp500$Date)
 sp500 <- sp500 %>%
   group_by(Symbol) %>%
   arrange(Date) %>%
-  mutate(Pct_Change = 100 * (Adj.Close / Adj.Close[1] - 1)) %>%
   filter(Date >= (max(Date) - 3650)) %>%
+  mutate(Pct_Change = 100 * ((Adj.Close / Adj.Close[1]) - 1)) %>%
   ungroup()
 
 # Find the top performer
 top_performer <- sp500 %>%
   group_by(Symbol) %>%
-  summarise(Total_Return = last(Pct_Change) - first(Pct_Change)) %>%
+  summarise(Total_Return = last(Pct_Change)) %>%
   filter(!is.na(Total_Return)) %>%
   arrange(desc(Total_Return)) %>%
   slice(1) %>%
   pull(Symbol)
+
+# Find the top performer
+top_performer_perc <- sp500 %>%
+  group_by(Symbol) %>%
+  mutate(Total_Return = last(Pct_Change)) %>%
+  slice(1)
 
 # Find the ten best performers
 top_ten_performers <- sp500 %>%
@@ -58,6 +64,8 @@ cat("Ten top performers:", paste(top_ten_performers, collapse = ", "), "\n")
 cat("Worst performer:", worst_performer, "\n")
 cat("Ten worst performers:", paste(worst_ten_performers, collapse = ", "), "\n")
 
+# Create a list to store the plots
+plots <- list()
 
 # Loop over the best performers and create separate plots for each stock
 for (symbol in top_ten_performers) {
