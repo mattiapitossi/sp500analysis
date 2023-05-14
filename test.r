@@ -2,7 +2,8 @@ library(ggplot2)
 library(dplyr)
 
 # Load the data into R
-sp500 <- read.csv("/Users/michelafarruggia/Desktop/sp500_stocks.csv", header = TRUE, sep = ",")
+sp500 <- read.csv("/Users/michelafarruggia/VScode Projects/sp500analysis/sp500_stocks.csv", header = TRUE, sep = ",")
+sp500_companies <- read.csv("/Users/michelafarruggia/VScode Projects/sp500analysis/sp500_companies.csv", header = TRUE, sep = ",")
 
 # Convert Date column to Date format
 sp500$Date <- as.Date(sp500$Date)
@@ -24,12 +25,6 @@ top_performer <- sp500 %>%
   slice(1) %>%
   pull(Symbol)
 
-# Find the top performer
-top_performer_perc <- sp500 %>%
-  group_by(Symbol) %>%
-  mutate(Total_Return = last(Pct_Change)) %>%
-  slice(1)
-
 # Find the ten best performers
 top_ten_performers <- sp500 %>%
   group_by(Symbol) %>%
@@ -38,6 +33,16 @@ top_ten_performers <- sp500 %>%
   arrange(desc(Total_Return)) %>%
   slice(1:10) %>%
   pull(Symbol)
+
+
+# Top ten performers sectors
+top_ten_performers_sectors <- sp500_companies %>%
+  filter(Symbol %in% top_ten_performers) %>%
+  mutate(symbol = Symbol) %>%
+  mutate(sector = Sector) %>%
+  mutate(sector = Industry) %>%
+  select(Symbol, Sector, Industry)
+
 
 # Find the worst performer
 worst_performer <- sp500 %>%
@@ -48,6 +53,7 @@ worst_performer <- sp500 %>%
   slice(1) %>%
   pull(Symbol)
 
+
 # Find the ten worst performers
 worst_ten_performers <- sp500 %>%
   group_by(Symbol) %>%
@@ -57,41 +63,36 @@ worst_ten_performers <- sp500 %>%
   slice(1:10) %>%
   pull(Symbol)
 
+# Worst ten performers sectors
+worst_ten_performers_sectors <- sp500_companies %>%
+  filter(Symbol %in% worst_ten_performers) %>%
+  mutate(symbol = Symbol) %>%
+  mutate(sector = Sector) %>%
+  mutate(sector = Industry) %>%
+  select(Symbol, Sector, Industry)
 
+# Print worst ten perfomers
+mgdata_worst <- sp500 %>%
+  filter(Symbol %in% worst_ten_performers) %>%
+  group_by(Date, Symbol) %>%
+  summarise(avgClose = mean(Close))
 
-# cat("Top performer:", top_performer, "\n")
-# cat("Ten top performers:", paste(top_ten_performers, collapse = ", "), "\n")
-# cat("Worst performer:", worst_performer, "\n")
-# cat("Ten worst performers:", paste(worst_ten_performers, collapse = ", "), "\n")
+plot_worst <- ggplot(mgdata_worst, aes(Date, avgClose, group = 1)) +
+  geom_line() +
+  facet_wrap(~Symbol, nrow = 2)
 
-# # Loop over the best performers and create separate plots for each stock
-# for (symbol in top_ten_performers) {
-#   # Create a plot for the current stock
-#   plot_data <- sp500 %>%
-#     filter(Symbol == symbol)
-#   plot_title <- paste0(symbol, " Performance over the last 10 years")
-#   plot_filename <- paste0(symbol, "_plot.png")
-#   plot <- ggplot(plot_data, aes(x = Date, y = Pct_Change)) +
-#     geom_line(color = "blue") +
-#     labs(title = plot_title, x = "Date", y = "Percentage Change") +
-#     ggtitle("Top Performer Plot")
+ggsave("worst_10_performing_stocks.png", plot_worst, width = 12, height = 6)
+print(plot_worst)
 
-#   # Save the plot as a PNG file
-#   ggsave(plot_filename, plot)
-
-#   # Display the plot
-#   print(plot)
-# }
-
-
-mgdata <- sp500 %>%
+# Print top ten perfomers
+mgdata_top <- sp500 %>%
   filter(Symbol %in% top_ten_performers) %>%
   group_by(Date, Symbol) %>%
   summarise(avgClose = mean(Close))
 
-plot <- ggplot(mgdata, aes(Date, avgClose, group = 1)) +
+plot_top <- ggplot(mgdata_top, aes(Date, avgClose, group = 1)) +
   geom_line() +
   facet_wrap(~Symbol, nrow = 2)
 
-ggsave("top_10_performing_stocks.png", plot, width = 12, height = 6)
-print(plot)
+ggsave("top_10_performing_stocks.png", plot_top, width = 12, height = 6)
+print(plot_top)
