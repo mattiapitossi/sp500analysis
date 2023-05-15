@@ -30,12 +30,21 @@ mgdata2 <- msciworld %>%
   group_by(Date) %>%
   summarise(avgClose2 = mean(Pct_Change))
 
-# Create the plot
-# Create the plot
+# Create the plot for SP500 index
+plot_sp500_index <- ggplot(mgdata, aes(x = Date, y = avgClose)) +
+  geom_line(color = "blue") +
+  labs(title = "S&P500", x = "Date", y = "avgClose") +
+  ggtitle("S&P500")
+
+ggsave("sp500.png", plot_sp500_index, width = 12, height = 6)
+
+
+# Create the plot for SP500 and MSCI comparison
 plot <- ggplot() +
   geom_line(data = mgdata, aes(Date, avgClose, group = 1, color = "S&P500"), label = "S&P500") +
   geom_line(data = mgdata2, aes(Date, avgClose2, group = 1, color = "MSCI World"), label = "MSCI World") +
-  labs(color = "Indexes")
+  labs(color = "Indexes") + 
+  scale_color_manual(values = c("red", "blue"), labels = c("MSCI World", "S&P500"))
 
 
 ggsave("s&p500.png", plot, width = 12, height = 6)
