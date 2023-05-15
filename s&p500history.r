@@ -1,6 +1,7 @@
 library(ggplot2)
 library(dplyr)
 library(patchwork)
+library(scales)
 
 # Load the data into R
 sp500 <- read.csv("sp500_index.csv", header = TRUE, sep = ",")
@@ -43,9 +44,9 @@ ggsave("sp500.png", plot_sp500_index, width = 12, height = 6)
 plot <- ggplot() +
   geom_line(data = mgdata, aes(Date, avgClose, group = 1, color = "S&P500"), label = "S&P500") +
   geom_line(data = mgdata2, aes(Date, avgClose2, group = 1, color = "MSCI World"), label = "MSCI World") +
-  labs(color = "Indexes") + 
+  labs(color = "Indexes", x = "", y = "") +
   scale_color_manual(values = c("red", "blue"), labels = c("MSCI World", "S&P500"))
 
 
-ggsave("s&p500.png", plot, width = 12, height = 6)
+ggsave("s&p500_history.png", plot, width = 12, height = 6)
 print(plot)
