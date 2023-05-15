@@ -3,8 +3,8 @@ library(dplyr)
 library(patchwork)
 
 # Load the data into R
-sp500 <- read.csv("/Users/mattiapitossi/Documents/VScodeProject/sp500analysis/sp500_index.csv", header = TRUE, sep = ",")
-msciworld <- read.csv("/Users/mattiapitossi/Documents/VScodeProject/sp500analysis/MSCI.csv", header = TRUE, sep = ",")
+sp500 <- read.csv("sp500_index.csv", header = TRUE, sep = ",")
+msciworld <- read.csv("MSCI.csv", header = TRUE, sep = ",")
 
 # Convert Date column to Date format
 sp500$Date <- as.Date(sp500$Date)
