@@ -45,7 +45,8 @@ plot <- ggplot() +
   geom_line(data = mgdata, aes(Date, avgClose, group = 1, color = "S&P500"), label = "S&P500") +
   geom_line(data = mgdata2, aes(Date, avgClose2, group = 1, color = "MSCI World"), label = "MSCI World") +
   labs(color = "Indexes", x = "", y = "") +
-  scale_color_manual(values = c("red", "blue"), labels = c("MSCI World", "S&P500"))
+  scale_color_manual(values = c("red", "blue"), labels = c("MSCI World", "S&P500")) +
+  scale_y_continuous(labels = function(x) paste0(x, "%"))
 
 
 ggsave("s&p500_history.png", plot, width = 12, height = 6)
