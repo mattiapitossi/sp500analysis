@@ -25,16 +25,20 @@ perc_chage <- sp500 %>%
 
 mgdata <- sp500 %>%
   group_by(Date) %>%
-  summarise(avgClose = mean(Pct_Change))
+  summarise(pctChange = mean(Pct_Change))
 
 mgdata2 <- msciworld %>%
   group_by(Date) %>%
   summarise(avgClose2 = mean(Pct_Change))
 
+mgdata_avg <- sp500 %>%
+  group_by(Date) %>%
+  summarise(avgClose = mean(SandP500))
+
 # Create the plot for SP500 index
-plot_sp500_index <- ggplot(mgdata, aes(x = Date, y = avgClose)) +
+plot_sp500_index <- ggplot(mgdata_avg, aes(x = Date, y = avgClose)) +
   geom_line(color = "blue") +
-  labs(title = "S&P500", x = "Date", y = "avgClose") +
+  labs(title = "S&P500", x = "", y = "") +
   ggtitle("S&P500")
 
 ggsave("sp500.png", plot_sp500_index, width = 12, height = 6)
@@ -42,7 +46,7 @@ ggsave("sp500.png", plot_sp500_index, width = 12, height = 6)
 
 # Create the plot for SP500 and MSCI comparison
 plot <- ggplot() +
-  geom_line(data = mgdata, aes(Date, avgClose, group = 1, color = "S&P500"), label = "S&P500") +
+  geom_line(data = mgdata, aes(Date, pctChange, group = 1, color = "S&P500"), label = "S&P500") +
   geom_line(data = mgdata2, aes(Date, avgClose2, group = 1, color = "MSCI World"), label = "MSCI World") +
   labs(color = "Indexes", x = "", y = "") +
   scale_color_manual(values = c("red", "blue"), labels = c("MSCI World", "S&P500")) +
