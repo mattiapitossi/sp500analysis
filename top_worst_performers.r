@@ -128,3 +128,37 @@ plot_worst_performer <- ggplot(plot_data_worst, aes(x = Date, y = Pct_Change)) +
   ggtitle(plot_data_worst$Symbol, "Worst Performer Plot")
 
 ggsave("worst_performing_stock.png", plot_worst_performer, width = 12, height = 6)
+
+# Set the font size for labels
+label_font_size <- 1.5
+
+# Set the radius for the pie chart
+pie_radius <- 0.8
+
+# Create a data frame with top sector names and their frequencies
+top_sectors <- c(select(top_ten_performers_sectors, Sector))
+top_sector_counts <- table(top_sectors)
+top_sector_percentages <- prop.table(top_sector_counts) * 100
+
+# Plot the pie chart of top sectors
+colors <- c("#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf")
+top_labels <- paste(names(top_sector_percentages), "\n", sprintf("%.1f%%", top_sector_percentages), sep="")
+png(file="pie_chart_top.png", width=1000, height=800)
+pie(top_sector_percentages, labels = top_labels, col = colors, cex = label_font_size, radius = pie_radius)
+dev.off()
+
+
+# Create a data frame with worst sector names and their frequencies
+# It is not possible to use worst_ten_sectors vector, in the dataset are not present the companies WBD 
+# and PAR, so we have to manually add "Media and Entertainment" twice
+worst_sectors <- worst_sectors <- c("Industrials", "Utilities", "Healthcare", "Energy", "Consumer Cyclical", 
+                   "Communication Services", "Communication Services", "Real Estate", "Media and Entertainment", "Media and Entertainment")
+worst_sector_counts <- table(worst_sectors)
+worst_sector_percentages <- prop.table(worst_sector_counts) * 100
+
+# Plot the pie chart of worst sectors
+colors <- c("#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf")
+worst_labels <- paste(names(worst_sector_percentages), "\n", sprintf("%.1f%%", worst_sector_percentages), sep="")
+png(file="pie_chart_worst.png", width=1000, height=800)
+pie(worst_sector_percentages, labels = worst_labels, col = colors, cex = label_font_size, radius = pie_radius)
+dev.off()
