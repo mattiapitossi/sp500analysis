@@ -73,7 +73,8 @@ mgdata_year <- mgdata_year %>%
 histogram <- ggplot(mgdata_year, aes(x = Year, y = pctYear, fill = pctYear_cat)) +
   labs(color = "Indexes", x = "", y = "") +
   geom_bar(stat = "identity") +
-  scale_fill_manual(values = c("Positive" = "blue", "Negative" = "red"))
+  scale_fill_manual(values = c("Positive" = "blue", "Negative" = "red")) +
+  scale_x_continuous(breaks = seq(2013, 2022, 1))
 
 # Save the plot
 ggsave("s&p500yearlyreturn.png", histogram, width = 10, height = 4)
