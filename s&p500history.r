@@ -2,6 +2,7 @@ library(ggplot2)
 library(dplyr)
 library(patchwork)
 library(scales)
+library(lubridate)
 
 # Load the data into R
 sp500 <- read.csv("sp500_index.csv", header = TRUE, sep = ",")
@@ -26,6 +27,14 @@ perc_chage <- sp500 %>%
 mgdata <- sp500 %>%
   group_by(Date) %>%
   summarise(pctChange = mean(Pct_Change))
+
+mgdata_year <- sp500 %>%
+  mutate(Year = year(Date)) %>%
+  arrange(Date) %>%
+  group_by(Year) %>%
+  mutate(pctYear = ((last(SandP500) - first(SandP500)) / first(SandP500)) * 100) %>%
+  slice_tail(n = 1) %>%
+  select(Year, pctYear)
 
 mgdata2 <- msciworld %>%
   group_by(Date) %>%
@@ -55,3 +64,17 @@ plot <- ggplot() +
 
 ggsave("s&p500_history.png", plot, width = 12, height = 6)
 print(plot)
+
+# Create new variable for positive and negative pctYear
+mgdata_year <- mgdata_year %>%
+  mutate(pctYear_cat = ifelse(pctYear >= 0, "Positive", "Negative"))
+
+# Plot
+histogram <- ggplot(mgdata_year, aes(x = Year, y = pctYear, fill = pctYear_cat)) +
+  labs(color = "Indexes", x = "", y = "") +
+  geom_bar(stat = "identity") +
+  scale_fill_manual(values = c("Positive" = "blue", "Negative" = "red"))
+
+# Save the plot
+ggsave("s&p500yearlyreturn.png", histogram, width = 10, height = 4)
+plot(histogram)
