@@ -136,16 +136,30 @@ ggsave("top_10_tech_performing_stocks.png", plot_top, width = 12, height = 6)
 print(plot_top)
 
 
-# Print worst performer
+# Print worst tech performer
 plot_data_worst <- sp500 %>%
   filter(Symbol == worst_tech_performer)
 
-plot_title <- paste0(worst_tech_performer, " Performance over the last 10 years")
-plot_filename <- paste0(worst_tech_performer, "_plot.png")
+plot_worst_title <- paste0(worst_tech_performer, " Performance over the last 10 years")
+plot_worst_filename <- paste0(worst_tech_performer, "_plot.png")
 
 plot_worst_performer <- ggplot(plot_data_worst, aes(x = Date, y = Pct_Change)) +
   geom_line(color = "blue") +
-  labs(title = plot_title, x = "", y = "") +
+  labs(title = plot_worst_title, x = "", y = "") +
   ggtitle(plot_data_worst$Symbol, "Worst Performer Plot")
 
 ggsave("worst_tech_performing_stock.png", plot_worst_performer, width = 12, height = 6)
+
+# Print top tech performer
+plot_data_top <- sp500 %>%
+  filter(Symbol == top_tech_performer)
+
+plot_top_title <- paste0(top_tech_performer, " Performance over the last 10 years")
+plot_top_filename <- paste0(worst_tech_performer, "_plot.png")
+
+plot_top_performer <- ggplot(plot_data_top, aes(x = Date, y = Pct_Change)) +
+  geom_line(color = "blue") +
+  labs(title = plot_top_title, x = "", y = "") +
+  ggtitle(plot_data_top$Symbol, "Top Performer Plot")
+
+ggsave("top_tech_performing_stock.png", plot_top_performer, width = 12, height = 6)
