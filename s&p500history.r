@@ -74,28 +74,31 @@ histogram <- ggplot(mgdata_year, aes(x = Year, y = pctYear, fill = pctYear_cat))
   labs(color = "Indexes", x = "", y = "") +
   geom_bar(stat = "identity") +
   scale_fill_manual(values = c("Positive" = "blue", "Negative" = "red")) +
-  scale_x_continuous(breaks = seq(2013, 2022, 1))
+  scale_x_continuous(breaks = seq(2013, 2022, 1)) +
+  theme(legend.position = "none")
 
 # Save the plot
 ggsave("s&p500yearlyreturn.png", histogram, width = 10, height = 4)
 plot(histogram)
 
 
-df = data.frame(index1 = mgdata$pctChange, index2 = mgdata2$avgClose2)
+df <- data.frame(index1 = mgdata$pctChange, index2 = mgdata2$avgClose2)
 
-correlation = cor(df$index1, df$index2)
+correlation <- cor(df$index1, df$index2)
 print(paste("Correlation: ", correlation))
 
-r_squared = correlation^2
+r_squared <- correlation^2
 
 label_string <- paste0("r^2 = ", round(r_squared, 3))
 
-corr_plot <- ggplot(df, aes(x=index1, y=index2)) +
+corr_plot <- ggplot(df, aes(x = index1, y = index2)) +
   geom_point() +
   geom_smooth(method = "lm", se = FALSE, color = "red") +
-  labs(title = "Correlation between S&P 500 and MSCI World",
-       x = "S&P 500",
-       y = "MSCI World") +
+  labs(
+    title = "Correlation between S&P 500 and MSCI World",
+    x = "S&P 500",
+    y = "MSCI World"
+  ) +
   annotate("text", x = 200, y = 25, label = label_string)
 
 print(corr_plot)
