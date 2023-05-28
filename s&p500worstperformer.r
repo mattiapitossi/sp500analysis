@@ -26,11 +26,11 @@ sp500_stocks <- sp500_stocks %>%
   ungroup()
 
 # Find the top performer
-top_performer <- sp500_stocks %>%
+worst_performers <- sp500_stocks %>%
   group_by(Symbol) %>%
   summarise(Total_Return = last(Pct_Change)) %>%
   filter(!is.na(Total_Return)) %>%
-  arrange(desc(Total_Return)) %>%
+  arrange(Total_Return) %>%
   slice(1:10) %>%
   pull(Symbol)
 
@@ -42,16 +42,16 @@ mgdata <- sp500 %>%
   arrange(Date) %>%
   mutate(Pct_Change = 100 * ((SandP500 / SandP500[1]) - 1))
 
-mgdata_top <- sp500_stocks %>%
-  filter(Symbol %in% top_performer) %>%
+mgdata_worst <- sp500_stocks %>%
+  filter(Symbol %in% worst_performers) %>%
   group_by(Symbol) %>%
   arrange(Date) %>%
   mutate(Pct_Change2 = 100 * ((Close / Close[1]) - 1))
 
-plot <- ggplot(mgdata_top, aes(x = Date, y = Pct_Change2, color = Symbol)) +
+plot <- ggplot(mgdata_worst, aes(x = Date, y = Pct_Change2, color = Symbol)) +
   geom_line() +
   labs(
-    title = "Performance of Top Stocks",
+    title = "Performance of Worst Stocks",
     x = "",
     y = "",
     color = "Symbol"
@@ -59,5 +59,5 @@ plot <- ggplot(mgdata_top, aes(x = Date, y = Pct_Change2, color = Symbol)) +
   scale_y_continuous(labels = function(x) paste0(x, "%"))
 
 
-ggsave("s&p500_best.png", plot, width = 12, height = 6)
+ggsave("s&p500_worst.png", plot, width = 12, height = 6)
 print(plot)
