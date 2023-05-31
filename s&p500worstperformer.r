@@ -10,7 +10,7 @@ sp500_stocks <- read.csv("sp500_stocks.csv", header = TRUE, sep = ",")
 sp500$Date <- as.Date(sp500$Date)
 
 # Calculate the percentage change in adjusted closing price from 10 years ago
-sp500 <- sp500 %>%
+mgdata <- sp500 %>%
   arrange(Date) %>%
   mutate(Pct_Change = 100 * ((SandP500 / SandP500[1]) - 1))
 
@@ -25,7 +25,7 @@ sp500_stocks <- sp500_stocks %>%
   mutate(Pct_Change = 100 * ((Adj.Close / Adj.Close[1]) - 1)) %>%
   ungroup()
 
-# Find the top performer
+# Find the worst performers
 worst_performers <- sp500_stocks %>%
   group_by(Symbol) %>%
   summarise(Total_Return = last(Pct_Change)) %>%
@@ -34,20 +34,15 @@ worst_performers <- sp500_stocks %>%
   slice(1:10) %>%
   pull(Symbol)
 
-perc_chage <- sp500 %>%
-  pull(last(Pct_Change))
 
-
-mgdata <- sp500 %>%
-  arrange(Date) %>%
-  mutate(Pct_Change = 100 * ((SandP500 / SandP500[1]) - 1))
-
+# Calculate the percentage change of worst performers
 mgdata_worst <- sp500_stocks %>%
   filter(Symbol %in% worst_performers) %>%
   group_by(Symbol) %>%
   arrange(Date) %>%
   mutate(Pct_Change2 = 100 * ((Close / Close[1]) - 1))
 
+# Plot the performance of worst performers
 plot <- ggplot(mgdata_worst, aes(x = Date, y = Pct_Change2, color = Symbol)) +
   geom_line() +
   labs(

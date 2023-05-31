@@ -2,7 +2,7 @@ library(ggplot2)
 library(dplyr)
 library(patchwork)
 
-# Load the data into R
+# Load the data
 sp500 <- read.csv("sp500_index.csv", header = TRUE, sep = ",")
 sp500_stocks <- read.csv("sp500_stocks.csv", header = TRUE, sep = ",")
 
@@ -34,20 +34,20 @@ top_performer <- sp500_stocks %>%
   slice(1:10) %>%
   pull(Symbol)
 
-perc_chage <- sp500 %>%
-  pull(last(Pct_Change))
-
-
+# Calculate the percentage change of S&P500 index
 mgdata <- sp500 %>%
   arrange(Date) %>%
   mutate(Pct_Change = 100 * ((SandP500 / SandP500[1]) - 1))
 
+# Calculate the percentage change of top performers
 mgdata_top <- sp500_stocks %>%
   filter(Symbol %in% top_performer) %>%
   group_by(Symbol) %>%
   arrange(Date) %>%
   mutate(Pct_Change2 = 100 * ((Close / Close[1]) - 1))
 
+
+# Plot the performance of top performers
 plot <- ggplot(mgdata_top, aes(x = Date, y = Pct_Change2, color = Symbol)) +
   geom_line() +
   labs(
@@ -60,4 +60,3 @@ plot <- ggplot(mgdata_top, aes(x = Date, y = Pct_Change2, color = Symbol)) +
 
 
 ggsave("s&p500_best.png", plot, width = 12, height = 6)
-print(plot)

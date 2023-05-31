@@ -2,7 +2,7 @@ library(ggplot2)
 library(dplyr)
 library(RColorBrewer)
 
-# Load the data into R
+# Load the data
 sp500 <- read.csv("sp500_stocks.csv", header = TRUE, sep = ",")
 sp500_companies <- read.csv("sp500_companies.csv", header = TRUE, sep = ",")
 
@@ -111,6 +111,7 @@ mgdata_worst <- sp500 %>%
   filter(Symbol %in% worst_ten_tech_performers) %>%
   group_by(Date, Symbol) %>%
   summarise(avgClose = mean(Close))
+
 
 mgdata_worst <- mgdata_worst %>%
   group_by(Symbol) %>%
