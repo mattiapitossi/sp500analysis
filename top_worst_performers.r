@@ -123,7 +123,7 @@ plot_data_worst <- sp500 %>%
 plot_title <- paste0(worst_performer, " Performance over the last 10 years")
 plot_filename <- paste0(worst_performer, "_plot.png")
 
-plot_worst_performer <- ggplot(plot_data_worst, aes(x = Date, y = Pct_Change)) +
+plot_worst_performer <- ggplot(plot_data_worst, aes(x = Date, y = Adj.Close)) +
   geom_line(color = "blue") +
   labs(title = plot_title, x = "", y = "") +
   ggtitle(plot_data_worst$Symbol, "Worst Performer Plot")

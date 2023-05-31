@@ -89,9 +89,9 @@ top_industry_counts <- table(top_industry)
 top_industry_percentages <- prop.table(top_industry_counts) * 100
 
 # Plot the pie chart of top tech industry
-top_labels <- paste(names(top_industry_percentages), "\n", sprintf("%.1f%%", top_industry_percentages), sep="")
-png(file="pie_chart_top_tech.png", width=1200, height=800)
-pie(top_industry_percentages, labels = top_labels, col = brewer.pal(10,"Set3"), cex = label_font_size, radius = pie_radius)
+top_labels <- paste(names(top_industry_percentages), "\n", sprintf("%.1f%%", top_industry_percentages), sep = "")
+png(file = "pie_chart_top_tech.png", width = 1200, height = 800)
+pie(top_industry_percentages, labels = top_labels, col = brewer.pal(10, "Set3"), cex = label_font_size, radius = pie_radius)
 dev.off()
 
 # Create a data frame with worst industry names and their frequencies
@@ -100,9 +100,9 @@ worst_industry_counts <- table(worst_industry)
 worst_industry_percentages <- prop.table(worst_industry_counts) * 100
 
 # Plot the pie chart of worst industry
-worst_labels <- paste(names(worst_industry_percentages), "\n", sprintf("%.1f%%", worst_industry_percentages), sep="")
-png(file="pie_chart_worst_tech.png", width=1200, height=800)
-pie(worst_industry_percentages, labels = worst_labels, col = brewer.pal(10,"Set3"), cex = label_font_size, radius = pie_radius)
+worst_labels <- paste(names(worst_industry_percentages), "\n", sprintf("%.1f%%", worst_industry_percentages), sep = "")
+png(file = "pie_chart_worst_tech.png", width = 1200, height = 800)
+pie(worst_industry_percentages, labels = worst_labels, col = brewer.pal(10, "Set3"), cex = label_font_size, radius = pie_radius)
 dev.off()
 
 
@@ -111,6 +111,24 @@ mgdata_worst <- sp500 %>%
   filter(Symbol %in% worst_ten_tech_performers) %>%
   group_by(Date, Symbol) %>%
   summarise(avgClose = mean(Close))
+
+mgdata_worst <- mgdata_worst %>%
+  group_by(Symbol) %>%
+  mutate(Pct_Change = 100 * ((avgClose / avgClose[1]) - 1))
+
+
+plot_top_performer_tech_stocks <- ggplot(mgdata_worst, aes(x = Date, y = Pct_Change, color = Symbol)) +
+  geom_line() +
+  labs(
+    title = "Performance of Tech Worst Stocks",
+    x = "",
+    y = "",
+    color = "Symbol"
+  ) +
+  scale_y_continuous(labels = function(x) paste0(x, "%"))
+
+
+ggsave("worst_tech_performing_stock_compare.png", plot_top_performer_tech_stocks, width = 12, height = 6)
 
 plot_worst <- ggplot(mgdata_worst, aes(Date, avgClose, group = 1)) +
   geom_line(color = "blue") +
@@ -127,6 +145,11 @@ mgdata_top <- sp500 %>%
   group_by(Date, Symbol) %>%
   summarise(avgClose = mean(Close))
 
+mgdata_top <- mgdata_top %>%
+  group_by(Symbol) %>%
+  mutate(Pct_Change = 100 * ((avgClose / avgClose[1]) - 1))
+
+
 plot_top <- ggplot(mgdata_top, aes(Date, avgClose, group = 1)) +
   geom_line(color = "blue") +
   labs(x = "", y = "") +
@@ -142,6 +165,19 @@ plot_data_worst <- sp500 %>%
 
 plot_worst_title <- paste0(worst_tech_performer, " Performance over the last 10 years")
 plot_worst_filename <- paste0(worst_tech_performer, "_plot.png")
+
+plot_top_performer_tech_stocks <- ggplot(mgdata_top, aes(x = Date, y = Pct_Change, color = Symbol)) +
+  geom_line() +
+  labs(
+    title = "Performance of Tech Top Stocks",
+    x = "",
+    y = "",
+    color = "Symbol"
+  ) +
+  scale_y_continuous(labels = function(x) paste0(x, "%"))
+
+
+ggsave("top_tech_performing_stock_compare.png", plot_top_performer_tech_stocks, width = 12, height = 6)
 
 plot_worst_performer <- ggplot(plot_data_worst, aes(x = Date, y = Adj.Close)) +
   geom_line(color = "blue") +
