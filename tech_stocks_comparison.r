@@ -106,19 +106,19 @@ pie(worst_industry_percentages, labels = worst_labels, col = brewer.pal(10, "Set
 dev.off()
 
 
-# Print worst ten perfomers
-mgdata_worst <- sp500 %>%
+# filter worst ten perfomers
+sp500_worst <- sp500 %>%
   filter(Symbol %in% worst_ten_tech_performers) %>%
   group_by(Date, Symbol) %>%
   summarise(avgClose = mean(Close))
 
-
-mgdata_worst <- mgdata_worst %>%
+# Calculate the percentage change of worst performers
+sp500_worst <- sp500_worst %>%
   group_by(Symbol) %>%
   mutate(Pct_Change = 100 * ((avgClose / avgClose[1]) - 1))
 
-
-plot_top_performer_tech_stocks <- ggplot(mgdata_worst, aes(x = Date, y = Pct_Change, color = Symbol)) +
+# Plot the performance of worst performers
+plot_top_performer_tech_stocks <- ggplot(sp500_worst, aes(x = Date, y = Pct_Change, color = Symbol)) +
   geom_line() +
   labs(
     title = "Performance of Tech Worst Stocks",
@@ -131,7 +131,8 @@ plot_top_performer_tech_stocks <- ggplot(mgdata_worst, aes(x = Date, y = Pct_Cha
 
 ggsave("worst_tech_performing_stock_compare.png", plot_top_performer_tech_stocks, width = 12, height = 6)
 
-plot_worst <- ggplot(mgdata_worst, aes(Date, avgClose, group = 1)) +
+# Plot the performance of worst performers
+plot_worst <- ggplot(sp500_worst, aes(Date, avgClose, group = 1)) +
   geom_line(color = "blue") +
   labs(x = "", y = "") +
   facet_wrap(~Symbol, nrow = 2)
@@ -141,23 +142,23 @@ print(plot_worst)
 
 
 # Print top ten perfomers
-mgdata_top <- sp500 %>%
+sp500_top <- sp500 %>%
   filter(Symbol %in% top_ten_tech_performers) %>%
   group_by(Date, Symbol) %>%
   summarise(avgClose = mean(Close))
 
-mgdata_top <- mgdata_top %>%
+# Calculate the percentage change of top performers
+sp500_top <- sp500_top %>%
   group_by(Symbol) %>%
   mutate(Pct_Change = 100 * ((avgClose / avgClose[1]) - 1))
 
-
-plot_top <- ggplot(mgdata_top, aes(Date, avgClose, group = 1)) +
+# Plot the performance of top performers
+plot_top <- ggplot(sp500_top, aes(Date, avgClose, group = 1)) +
   geom_line(color = "blue") +
   labs(x = "", y = "") +
   facet_wrap(~Symbol, nrow = 2)
 
 ggsave("top_10_tech_performing_stocks.png", plot_top, width = 12, height = 6)
-print(plot_top)
 
 
 # Print worst tech performer
@@ -167,7 +168,8 @@ plot_data_worst <- sp500 %>%
 plot_worst_title <- paste0(worst_tech_performer, " Performance over the last 10 years")
 plot_worst_filename <- paste0(worst_tech_performer, "_plot.png")
 
-plot_top_performer_tech_stocks <- ggplot(mgdata_top, aes(x = Date, y = Pct_Change, color = Symbol)) +
+# Plot the performance of top tech performers
+plot_top_performer_tech_stocks <- ggplot(sp500_top, aes(x = Date, y = Pct_Change, color = Symbol)) +
   geom_line() +
   labs(
     title = "Performance of Tech Top Stocks",
@@ -180,6 +182,7 @@ plot_top_performer_tech_stocks <- ggplot(mgdata_top, aes(x = Date, y = Pct_Chang
 
 ggsave("top_tech_performing_stock_compare.png", plot_top_performer_tech_stocks, width = 12, height = 6)
 
+# Plot the performance of worst tech performers
 plot_worst_performer <- ggplot(plot_data_worst, aes(x = Date, y = Adj.Close)) +
   geom_line(color = "blue") +
   labs(title = plot_worst_title, x = "", y = "") +
@@ -187,13 +190,14 @@ plot_worst_performer <- ggplot(plot_data_worst, aes(x = Date, y = Adj.Close)) +
 
 ggsave("worst_tech_performing_stock.png", plot_worst_performer, width = 12, height = 6)
 
-# Print top tech performer
+# filter top tech performer
 plot_data_top <- sp500 %>%
   filter(Symbol == top_tech_performer)
 
 plot_top_title <- paste0(top_tech_performer, " Performance over the last 10 years")
 plot_top_filename <- paste0(worst_tech_performer, "_plot.png")
 
+# Plot the performance of top tech performers
 plot_top_performer <- ggplot(plot_data_top, aes(x = Date, y = Pct_Change)) +
   geom_line(color = "blue") +
   labs(title = plot_top_title, x = "", y = "") +
