@@ -4,7 +4,7 @@ library(patchwork)
 library(scales)
 library(lubridate)
 
-# Load the data
+# Load data
 sp500 <- read.csv("sp500_index.csv", header = TRUE, sep = ",")
 msciworld <- read.csv("MSCI.csv", header = TRUE, sep = ",")
 
@@ -12,19 +12,18 @@ msciworld <- read.csv("MSCI.csv", header = TRUE, sep = ",")
 sp500$Date <- as.Date(sp500$Date)
 msciworld$Date <- as.Date(msciworld$Date)
 
-# Calculate the percentage change of S&P500 index in adjusted closing price from 10 years ago
-mgdata <- sp500 %>%
+# Calculate the percentage of S&P500 index change in adjusted closing price from 10 years ago
+sp500data <- sp500 %>%
   arrange(Date) %>%
   mutate(pctChange = 100 * ((SandP500 / SandP500[1]) - 1))
 
-# Calculate the percentage change of MSCI World index in adjusted closing price from 10 years ago
-mgdata2 <- msciworld %>%
+# Calculate the percentage of MSCI world index change in adjusted closing price from 10 years ago
+msciworld_data <- msciworld %>%
   arrange(Date) %>%
   mutate(pctChange = 100 * ((Close / Close[1]) - 1))
 
-
-# Calculate the annualized performance of the S&P500 index
-mgdata_year <- sp500 %>%
+# Calculate annual return
+sp500_year <- sp500 %>%
   mutate(Year = year(Date)) %>%
   arrange(Date) %>%
   group_by(Year) %>%
@@ -32,13 +31,12 @@ mgdata_year <- sp500 %>%
   slice_tail(n = 1) %>%
   select(Year, pctYear)
 
-# Calculae the average close of S&P500 index
-mgdata_avg <- sp500 %>%
+sp500_avg <- sp500 %>%
   group_by(Date) %>%
   summarise(avgClose = mean(SandP500))
 
 # Create the plot for SP500 index
-plot_sp500_index <- ggplot(mgdata_avg, aes(x = Date, y = avgClose)) +
+plot_sp500_index <- ggplot(sp500_avg, aes(x = Date, y = avgClose)) +
   geom_line(color = "blue") +
   labs(title = "S&P500", x = "", y = "") +
   ggtitle("S&P500")
@@ -48,8 +46,8 @@ ggsave("sp500.png", plot_sp500_index, width = 12, height = 6)
 
 # Create the plot for SP500 and MSCI comparison
 plot <- ggplot() +
-  geom_line(data = mgdata, aes(Date, pctChange, group = 1, color = "S&P500"), label = "S&P500") +
-  geom_line(data = mgdata2, aes(Date, pctChange, group = 1, color = "MSCI World"), label = "MSCI World") +
+  geom_line(data = sp500data, aes(Date, pctChange, group = 1, color = "S&P500"), label = "S&P500") +
+  geom_line(data = msciworld_data, aes(Date, pctChange, group = 1, color = "MSCI World"), label = "MSCI World") +
   labs(color = "Indexes", x = "", y = "") +
   scale_color_manual(values = c("red", "blue"), labels = c("MSCI World", "S&P500")) +
   scale_y_continuous(labels = function(x) paste0(x, "%"))
@@ -58,7 +56,7 @@ plot <- ggplot() +
 ggsave("s&p500_history.png", plot, width = 12, height = 6)
 
 # Create new variable for positive and negative pctYear
-mgdata_year <- mgdata_year %>%
+mgdata_year <- sp500_year %>%
   mutate(pctYear_cat = ifelse(pctYear >= 0, "Positive", "Negative"))
 
 # Plot the histogram
@@ -74,12 +72,12 @@ histogram <- ggplot(mgdata_year, aes(x = Year, y = pctYear, fill = pctYear_cat))
 ggsave("s&p500yearlyreturn.png", histogram, width = 10, height = 4)
 
 
-df <- data.frame(index1 = mgdata$pctChange, index2 = mgdata2$avgClose2)
+df <- data.frame(index1 = sp500data$pctChange, index2 = msciworld_data$pctChange)
 
-# Calculate the correlation between S&P500 and MSCI World
+# Calculate the correlation
 correlation <- cor(df$index1, df$index2)
 
-# Calculate coefficient of determination
+# Calculate the coefficient of determination
 r_squared <- correlation^2
 
 label_string <- paste0("r^2 = ", round(r_squared, 3))
