@@ -2,7 +2,7 @@ library(ggplot2)
 library(dplyr)
 library(RColorBrewer)
 
-# Load the data into R
+# Load data
 sp500 <- read.csv("sp500_stocks.csv", header = TRUE, sep = ",")
 sp500_companies <- read.csv("sp500_companies.csv", header = TRUE, sep = ",")
 

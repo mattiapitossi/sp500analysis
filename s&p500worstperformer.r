@@ -2,7 +2,7 @@ library(ggplot2)
 library(dplyr)
 library(patchwork)
 
-# Load the data into R
+# Load data
 sp500 <- read.csv("sp500_index.csv", header = TRUE, sep = ",")
 sp500_stocks <- read.csv("sp500_stocks.csv", header = TRUE, sep = ",")
 
@@ -55,4 +55,3 @@ plot <- ggplot(mgdata_worst, aes(x = Date, y = Pct_Change2, color = Symbol)) +
 
 
 ggsave("s&p500_worst.png", plot, width = 12, height = 6)
-print(plot)

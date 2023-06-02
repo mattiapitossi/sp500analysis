@@ -2,7 +2,7 @@ library(ggplot2)
 library(dplyr)
 library(patchwork)
 
-# Load the data
+# Load data
 sp500 <- read.csv("sp500_index.csv", header = TRUE, sep = ",")
 sp500_stocks <- read.csv("sp500_stocks.csv", header = TRUE, sep = ",")
 
